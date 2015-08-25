@@ -1,0 +1,173 @@
+<?php require_once('../../Connections/footy.php'); ?>
+<?php
+if (!function_exists("GetSQLValueString")) {
+function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
+{
+  if (PHP_VERSION < 6) {
+    $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
+  }
+
+  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+
+  switch ($theType) {
+    case "text":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;    
+    case "long":
+    case "int":
+      $theValue = ($theValue != "") ? intval($theValue) : "NULL";
+      break;
+    case "double":
+      $theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
+      break;
+    case "date":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;
+    case "defined":
+      $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
+      break;
+  }
+  return $theValue;
+}
+}
+?>
+<?php
+// *** Validate request to login to this site.
+if (!isset($_SESSION)) {
+  session_start();
+}
+
+$loginFormAction = $_SERVER['PHP_SELF'];
+if (isset($_GET['accesscheck'])) {
+  $_SESSION['PrevUrl'] = $_GET['accesscheck'];
+}
+
+if (isset($_POST['USERNAME'])) {
+  $loginUsername=$_POST['USERNAME'];
+  $password=$_POST['PASSOWRD'];
+  $MM_fldUserAuthorization = "userlevel";
+  $MM_redirectLoginSuccess = "afterloggin.php";
+  $MM_redirectLoginFailed = "login.php";
+  $MM_redirecttoReferrer = false;
+  mysql_select_db($database_footy, $footy);
+  	
+  $LoginRS__query=sprintf("SELECT username, password, userlevel FROM userinfo WHERE username=%s AND password=%s",
+  GetSQLValueString($loginUsername, "text"), GetSQLValueString($password, "text")); 
+   
+  $LoginRS = mysql_query($LoginRS__query, $footy) or die(mysql_error());
+  $loginFoundUser = mysql_num_rows($LoginRS);
+  if ($loginFoundUser) {
+    
+    $loginStrGroup  = mysql_result($LoginRS,0,'userlevel');
+    
+	if (PHP_VERSION >= 5.1) {session_regenerate_id(true);} else {session_regenerate_id();}
+    //declare two session variables and assign them
+    $_SESSION['MM_Username'] = $loginUsername;
+    $_SESSION['MM_UserGroup'] = $loginStrGroup;	      
+
+    if (isset($_SESSION['PrevUrl']) && false) {
+      $MM_redirectLoginSuccess = $_SESSION['PrevUrl'];	
+    }
+    header("Location: " . $MM_redirectLoginSuccess );
+  }
+  else {
+    header("Location: ". $MM_redirectLoginFailed );
+  }
+}
+?>
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>crimefile</title>
+
+
+<link rel="stylesheet" href="css/reset.css" type="text/css" />
+<link rel="stylesheet" href="css/styles.css" type="text/css" />
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/slider.js"></script>
+<script type="text/javascript" src="js/superfish.js"></script>
+
+<script type="text/javascript" src="js/custom.js"></script>
+
+
+
+<meta charset="utf-8" />
+  
+  <title>jQuery UI Datepicker</title>
+  <link href="jquery-ui_themes_smoothness.css" rel="stylesheet" type="text/css" />
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css" />
+  
+  <script type="text/javascript">
+$(document).ready(function() {
+    $( "#datepicker" ).datepicker({ minDate: -20, maxDate: "1Y+1M+7D",
+	changeMonth: true, changeYear: true,
+	numberOfMonths:2,
+	dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+	dateFormat:"dd/mm/yy",
+	showAnim:"drop" });//fold, slide, blind, bounce, slideDown, show, fadeIn, clip.
+  });
+  </script>
+
+
+
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+
+<!--
+deiform, a free CSS web template by ZyPOP (zypopwebtemplates.com/)
+
+Download: http://zypopwebtemplates.com/
+
+License: Creative Commons Attribution
+//-->
+</head>
+<body>
+<div id="container" class="width">
+  <div id="body">
+  <section id="content" class="three-column">
+        
+        <article>
+    <form ACTION="<?php echo $loginFormAction; ?>" method="POST" name="login" id="login">
+      <table width="600" border="0">
+        <tr>
+          <th scope="row">USER NAME:</th>
+        </tr>
+        <tr>
+          <th scope="row"><label>
+            <input type="text" name="USERNAME" id="USERNAME">
+          </label></th>
+        </tr>
+        <tr>
+          <th scope="row">PASSWORD:</th>
+        </tr>
+        <tr>
+          <th scope="row"><label>
+            <input type="password" name="PASSOWRD" id="PASSOWRD">
+            <br>
+            <br>
+            <br>
+            <input type="submit" name="LOGIN" id="LOGIN" value="LOGIN">
+          </label></th>
+          
+        </tr>
+      </table>
+    </form>
+    <h2><a href="register.php">sign up</a> </h2>
+    <p>&nbsp;</p>
+    <p><a href="adminlogin.php" class="button">login as administrator</a>
+  </article>
+  </section>
+      <div class="clear"></div>
+    </div>
+</div>
+</body>
+</html>
