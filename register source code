@@ -1,0 +1,205 @@
+<?php require_once('../../Connections/footy.php'); ?>
+<?php
+if (!function_exists("GetSQLValueString")) {
+function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDefinedValue = "") 
+{
+  if (PHP_VERSION < 6) {
+    $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
+  }
+
+  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+
+  switch ($theType) {
+    case "text":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;    
+    case "long":
+    case "int":
+      $theValue = ($theValue != "") ? intval($theValue) : "NULL";
+      break;
+    case "double":
+      $theValue = ($theValue != "") ? doubleval($theValue) : "NULL";
+      break;
+    case "date":
+      $theValue = ($theValue != "") ? "'" . $theValue . "'" : "NULL";
+      break;
+    case "defined":
+      $theValue = ($theValue != "") ? $theDefinedValue : $theNotDefinedValue;
+      break;
+  }
+  return $theValue;
+}
+}
+
+$editFormAction = $_SERVER['PHP_SELF'];
+if (isset($_SERVER['QUERY_STRING'])) {
+  $editFormAction .= "?" . htmlentities($_SERVER['QUERY_STRING']);
+}
+
+if ((isset($_POST["MM_insert"])) && ($_POST["MM_insert"] == "INPUT")) {
+  $insertSQL = sprintf("INSERT INTO userinfo (firstname, lastname, email, password, username) VALUES (%s, %s, %s, %s, %s)",
+                       GetSQLValueString($_POST['firstname'], "text"),
+                       GetSQLValueString($_POST['lastname'], "text"),
+                       GetSQLValueString($_POST['email'], "text"),
+                       GetSQLValueString($_POST['PASSWORD'], "text"),
+                       GetSQLValueString($_POST['username'], "text"));
+
+  mysql_select_db($database_footy, $footy);
+  $Result1 = mysql_query($insertSQL, $footy) or die(mysql_error());
+
+  $insertGoTo = "login.php";
+  if (isset($_SERVER['QUERY_STRING'])) {
+    $insertGoTo .= (strpos($insertGoTo, '?')) ? "&" : "?";
+    $insertGoTo .= $_SERVER['QUERY_STRING'];
+  }
+  header(sprintf("Location: %s", $insertGoTo));
+}
+
+mysql_select_db($database_footy, $footy);
+$query_Recordset1 = "SELECT * FROM userinfo";
+$Recordset1 = mysql_query($query_Recordset1, $footy) or die(mysql_error());
+$row_Recordset1 = mysql_fetch_assoc($Recordset1);
+$totalRows_Recordset1 = mysql_num_rows($Recordset1);
+?>
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>crimefile</title>
+
+
+<link rel="stylesheet" href="css/reset.css" type="text/css" />
+<link rel="stylesheet" href="css/styles.css" type="text/css" />
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+<!--[if lt IE 9]>
+<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/slider.js"></script>
+<script type="text/javascript" src="js/superfish.js"></script>
+
+<script type="text/javascript" src="js/custom.js"></script>
+
+<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0" />
+
+<!--
+deiform, a free CSS web template by ZyPOP (zypopwebtemplates.com/)
+
+Download: http://zypopwebtemplates.com/
+
+License: Creative Commons Attribution
+//-->
+<script type="text/javascript">
+function MM_validateForm() { //v4.0
+  if (document.getElementById){
+    var i,p,q,nm,test,num,min,max,errors='',args=MM_validateForm.arguments;
+    for (i=0; i<(args.length-2); i+=3) { test=args[i+2]; val=document.getElementById(args[i]);
+      if (val) { nm=val.name; if ((val=val.value)!="") {
+        if (test.indexOf('isEmail')!=-1) { p=val.indexOf('@');
+          if (p<1 || p==(val.length-1)) errors+='- '+nm+' must contain an e-mail address.\n';
+        } else if (test!='R') { num = parseFloat(val);
+          if (isNaN(val)) errors+='- '+nm+' must contain a number.\n';
+          if (test.indexOf('inRange') != -1) { p=test.indexOf(':');
+            min=test.substring(8,p); max=test.substring(p+1);
+            if (num<min || max<num) errors+='- '+nm+' must contain a number between '+min+' and '+max+'.\n';
+      } } } else if (test.charAt(0) == 'R') errors += '- '+nm+' is required.\n'; }
+    } if (errors) alert('The following error(s) occurred:\n'+errors);
+    document.MM_returnValue = (errors == '');
+} }
+</script>
+</head>
+<body>
+<div id="container" class="width">
+  <div id="body" class="no-intro">
+
+	<section id="content" class="one-column">
+
+  <article><!--end form wrap-->
+    <blockquote>
+		  <blockquote>
+        <blockquote>
+                  <blockquote>
+                    <blockquote>
+                      <blockquote>
+                        <blockquote>
+                          <blockquote>
+                            <form action="<?php echo $editFormAction; ?>" method="POST" name="INPUT" id="INPUT">
+                            <table width="600" border="0">
+                              <tr>
+                                  <th scope="row">FIRST NAME:</th>
+                              </tr>
+                                <tr>
+                                  <th scope="row"><label>
+                                    <input type="text" name="firstname" id="firstname">
+                                  </label></th>
+                                </tr>
+                                <tr>
+                                  <th scope="row">LAST NAME</th>
+                                </tr>
+                                <tr>
+                                  <th scope="row"><label>
+                                    <input type="text" name="lastname" id="lastname">
+                                  </label></th>
+                                </tr>
+                                <tr>
+                                  <th scope="row">USER NAME:</th>
+                                </tr>
+                                <tr>
+                                  <th scope="row"><label>
+                                    <input type="text" name="username" id="username">
+                                  </label></th>
+                                </tr>
+                                <tr>
+                                  <th scope="row">EMAIL:</th>
+                                </tr>
+                                <tr>
+                                  <th scope="row"><label>
+                                    <input type="text" name="email" id="email">
+                                  </label></th>
+                                </tr>
+                                <tr>
+                                  <th scope="row">PASSWORD:</th>
+                                </tr>
+                                <tr>
+                                  <th scope="row"><label>
+                                    <input type="password" name="PASSWORD" id="PASSWORD">
+                                    <br>
+                                    <br>
+                                    <input name="resigter" type="submit" id="resigter" onClick="MM_validateForm('username','','R','email','','RisEmail','PASSWORD','','R');return document.MM_returnValue" value="Submit">
+                                  </label></th>
+                                </tr>
+                              </table>
+                              <input type="hidden" name="MM_insert" value="INPUT">
+                            </form>
+                            <p>&nbsp;</p>
+                          </blockquote>
+                        </blockquote>
+                      </blockquote>
+                    </blockquote>
+              </blockquote>
+            </blockquote>
+      </blockquote></blockquote></article>
+	
+	  <article class="expanded">
+	    <p>&nbsp;</p>
+</article>
+    </section>
+        
+        
+    	<div class="clear"></div>
+  </div>
+</div>
+
+    <footer class="width">
+      <div class="footer-bottom">
+        <p>&nbsp;</p>
+      </div>
+</footer>
+</body>
+</html>
+<?php
+mysql_free_result($Recordset1);
+?>
