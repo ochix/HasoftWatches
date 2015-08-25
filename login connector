@@ -1,0 +1,10 @@
+<?php
+# FileName="Connection_php_mysql.htm"
+# Type="MYSQL"
+# HTTP="true"
+$hostname_footy = "localhost";
+$database_footy = "db7662(1)";
+$username_footy = "root";
+$password_footy = "";
+$footy = mysql_pconnect($hostname_footy, $username_footy, $password_footy) or trigger_error(mysql_error(),E_USER_ERROR); 
+?>
